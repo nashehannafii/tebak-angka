@@ -1,4 +1,5 @@
-const socket = io();
+const socket = typeof io === 'function' ? io() : null;
+const multiplayerOnline = Boolean(socket && !socket.offline);
 
 let currentRoomId = null;
 let gameDigits = 4;
@@ -33,8 +34,20 @@ function switchView(viewElement) {
     viewElement.classList.remove('hidden');
 }
 
+function showOfflineNotice() {
+    const errorTxt = document.getElementById('errorTxt');
+    if (errorTxt) {
+        errorTxt.innerText = 'Mode demo: Vercel hanya melayani frontend. Multiplayer Socket.IO butuh backend Node.js terpisah.';
+    }
+}
+
 // --- Menu Actions ---
 function createRoom() {
+    if (!multiplayerOnline) {
+        showOfflineNotice();
+        alert('Multiplayer tidak aktif di deployment Vercel ini. Jalankan backend Node.js/socket.io terpisah untuk fitur penuh.');
+        return;
+    }
     const digits = document.getElementById('digitsInput').value;
     const roundTime = document.getElementById('roundTimeInput').value || 20;
     localName = document.getElementById('createNameInput').value || 'Player1';
@@ -42,6 +55,11 @@ function createRoom() {
 }
 
 function joinRoom() {
+    if (!multiplayerOnline) {
+        showOfflineNotice();
+        alert('Multiplayer tidak aktif di deployment Vercel ini. Jalankan backend Node.js/socket.io terpisah untuk fitur penuh.');
+        return;
+    }
     const code = document.getElementById('joinCode').value.toUpperCase();
     if (code) {
         currentRoomId = code; // <-- Ini kunci perbaikannya
@@ -59,6 +77,10 @@ socket.on('roomCreated', (roomId) => {
     const myNameEl = document.getElementById('myNameDisplay');
     if (myNameEl) myNameEl.innerText = localName;
 });
+
+if (!multiplayerOnline) {
+    showOfflineNotice();
+}
 
 socket.on('errorMsg', (msg) => {
     document.getElementById('errorTxt').innerText = msg;
@@ -104,6 +126,10 @@ socket.on('gameStart', (payload) => {
 });
 
 function lockSecret() {
+    if (!multiplayerOnline) {
+        showOfflineNotice();
+        return;
+    }
     const secret = getContainerValue('secretInputContainer');
     if (secret.length != gameDigits || !/^\d+$/.test(secret)) {
         alert(`Harus tepat ${gameDigits} digit!`);
@@ -139,6 +165,10 @@ socket.on('roundStart', (seconds) => {
 });
 
 function submitGuess() {
+    if (!multiplayerOnline) {
+        showOfflineNotice();
+        return;
+    }
     let guess = getContainerValue('guessInputContainer');
     if (guess.length != gameDigits || !/^\d+$/.test(guess)) {
         alert(`Tebakan harus ${gameDigits} digit!`);
@@ -238,6 +268,10 @@ function appendHistory(container, guess, resultArr) {
 }
 
 function requestRematch() {
+    if (!multiplayerOnline) {
+        showOfflineNotice();
+        return;
+    }
     const digits = parseInt(document.getElementById('rematchDigitsInput').value) || gameDigits;
     const roundTime = parseInt(document.getElementById('rematchRoundTimeInput').value) || 20;
     socket.emit('requestRematch', { roomId: currentRoomId, digits, roundTime });
