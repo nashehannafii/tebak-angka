@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tebak Angka Multiplayer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Tebak Angka</h1>
+        
+        <div id="menu">
+            <div class="card">
+                <h3>Buat Room</h3>
+                <input type="text" id="createNameInput" value="Player1" placeholder="Nama Anda">
+                <input type="number" id="digitsInput" value="4" min="3" max="8" placeholder="Jumlah Digit">
+                <input type="number" id="roundTimeInput" value="20" min="5" max="120" placeholder="Durasi Ronde (detik)">
+                <button onclick="createRoom()">Buat (Player 1)</button>
+            </div>
+            <div class="card">
+                <h3>Join Room</h3>
+                <input type="text" id="joinCode" placeholder="Kode Room">
+                <input type="text" id="joinNameInput" value="Player2" placeholder="Nama Anda">
+                <button onclick="joinRoom()">Join (Player 2)</button>
+            </div>
+            <p id="errorTxt" style="color: red;"></p>
+        </div>
+
+        <div id="waitingRoom" class="hidden">
+            <h3>Kode Room Anda: <span id="roomCodeDisplay"></span></h3>
+            <p>Menunggu Player 2 bergabung...</p>
+            <p>Anda: <span id="myNameDisplay"></span></p>
+            <p>Lawan: <span id="opponentNameDisplay">-</span></p>
+        </div>
+
+        <div id="setSecretScreen" class="hidden">
+            <h3>Masukkan Angka Rahasia Anda</h3>
+            <p>Panjang digit: <span id="digitLen"></span></p>
+            <div id="secretInputContainer" class="digit-inputs"></div>
+            <button onclick="lockSecret()">Kunci Angka</button>
+            <p id="secretStatus"></p>
+        </div>
+
+        <div id="gameArea" class="hidden">
+            <h2 id="timerDisplay">Waktu: 20s</h2>
+            <p>Anda: <span id="myNameDisplayGame"></span> | Lawan: <span id="opponentNameDisplayGame"></span></p>
+            <div class="input-area">
+                <div id="guessInputContainer" class="digit-inputs"></div>
+                <button id="guessBtn" onclick="submitGuess()">Kirim Tebakan</button>
+            </div>
+            <div id="statusInfo"></div>
+            
+            <div class="history-container">
+                <div class="history-panel">
+                    <h3>Riwayat Anda</h3>
+                    <div id="myHistory"></div>
+                </div>
+                <div class="history-panel">
+                    <h3>Riwayat Lawan</h3>
+                    <div id="opponentHistory"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="rematchArea" class="hidden">
+            <h3>Rematch</h3>
+            <div id="rematchOwnerControls" class="hidden">
+                <p>Atur ulang pengaturan (Player 1):</p>
+                <input type="number" id="rematchDigitsInput" value="4" min="3" max="8">
+                <input type="number" id="rematchRoundTimeInput" value="20" min="5" max="120">
+                <button id="rematchBtn" onclick="requestRematch()">Minta Main Lagi</button>
+            </div>
+            <div id="rematchWaiting" class="hidden">
+                <p>Menunggu Player 1 mengatur rematch...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
