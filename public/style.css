@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    margin: 0;
+}
+
+.container {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+}
+
+.hidden { display: none !important; }
+
+h1, h2, h3 { margin-top: 0; }
+
+input {
+    width: 80%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    text-align: center;
+}
+
+/* Block-style digit inputs */
+.digit-inputs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 10px 0;
+}
+.digit-input {
+    width: 48px;
+    height: 56px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 24px;
+    font-weight: 600;
+    background: #fff;
+    text-align: center;
+}
+.digit-input:focus {
+    outline: 2px solid #4a90e2;
+    border-color: transparent;
+}
+
+button {
+    background: #222;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.2s;
+}
+
+button:hover { background: #444; }
+button:disabled { background: #ccc; cursor: not-allowed; }
+
+.card {
+    background: #fafafa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #eee;
+}
+
+#timerDisplay { color: #d32f2f; }
+
+.history-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.history-panel {
+    flex: 1;
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.guess-row {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-bottom: 8px;
+}
+
+.digit-block {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-weight: bold;
+    color: white;
+}
+
+.green { background-color: #4caf50; }
+.yellow { background-color: #fbc02d; }
+.red { background-color: #f44336; }
