@@ -8,6 +8,8 @@ let localName = '';
 let opponentName = '';
 let roomOwnerId = null;
 let amOwner = false;
+let myScore = 0;
+let opponentScore = 0;
 
 // UI Elements
 const ui = {
@@ -21,10 +23,17 @@ const ui = {
     statusInfo: document.getElementById('statusInfo'),
     myHistory: document.getElementById('myHistory'),
     opponentHistory: document.getElementById('opponentHistory'),
+    myScoreDisplay: document.getElementById('myScoreDisplay'),
+    opponentScoreDisplay: document.getElementById('opponentScoreDisplay'),
     guessBtn: document.getElementById('guessBtn'),
     secretInputContainer: document.getElementById('secretInputContainer'),
     guessInputContainer: document.getElementById('guessInputContainer')
 };
+
+function updateScoreDisplay() {
+    ui.myScoreDisplay.innerText = myScore;
+    ui.opponentScoreDisplay.innerText = opponentScore;
+}
 
 function switchView(viewElement) {
     ui.menu.classList.add('hidden');
@@ -121,9 +130,22 @@ socket.on('gameStart', (payload) => {
     // hide/show rematch area
     document.getElementById('rematchArea').classList.add('hidden');
 
+    if (payload && payload.scores) {
+        myScore = payload.scores[socket.id] || 0;
+        const opponentId = Object.keys(payload.players || {}).find(id => id !== socket.id);
+        opponentScore = opponentId ? payload.scores[opponentId] || 0 : 0;
+        updateScoreDisplay();
+    }
+
+    clearHistoryUI();
     switchView(ui.setSecretScreen);
     renderSecretInputs(digits);
 });
+
+function clearHistoryUI() {
+    ui.myHistory.innerHTML = '';
+    ui.opponentHistory.innerHTML = '';
+}
 
 function lockSecret() {
     if (!multiplayerOnline) {
@@ -231,8 +253,14 @@ socket.on('roundResult', (data) => {
     appendHistory(ui.opponentHistory, opponentData.guess, opponentData.result);
 });
 
-socket.on('gameOver', ({ p1Win, p2Win }) => {
+socket.on('gameOver', ({ p1Win, p2Win, scores }) => {
     clearInterval(timerInterval);
+    if (scores) {
+        myScore = scores[socket.id] || 0;
+        const opponentId = Object.keys(scores).find(id => id !== socket.id);
+        opponentScore = opponentId ? scores[opponentId] || 0 : 0;
+        updateScoreDisplay();
+    }
     if (p1Win && p2Win) {
         ui.statusInfo.innerText = "GAME OVER! HASIL: SERI!";
     } else if (p1Win) {

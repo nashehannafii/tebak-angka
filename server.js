@@ -52,6 +52,7 @@ io.on('connection', (socket) => {
             roundTime: roundTime,
             secrets: {},
             guesses: {},
+            scores: { [socket.id]: 0 },
             history: [],
             roundActive: false,
             timeoutId: null,
@@ -66,12 +67,19 @@ io.on('connection', (socket) => {
         const name = payload && payload.name ? String(payload.name) : 'Player2';
         if (roomId && rooms[roomId] && Object.keys(rooms[roomId].players).length === 1) {
             rooms[roomId].players[socket.id] = { id: 2, name };
+            rooms[roomId].scores[socket.id] = 0;
             socket.join(roomId);
             const playersMap = {};
             for (let id of Object.keys(rooms[roomId].players)) {
                 playersMap[id] = rooms[roomId].players[id].name;
             }
-            io.to(roomId).emit('gameStart', { digits: rooms[roomId].digits, roundTime: rooms[roomId].roundTime, players: playersMap, ownerId: rooms[roomId].ownerId });
+            io.to(roomId).emit('gameStart', {
+                digits: rooms[roomId].digits,
+                roundTime: rooms[roomId].roundTime,
+                players: playersMap,
+                ownerId: rooms[roomId].ownerId,
+                scores: rooms[roomId].scores
+            });
         } else {
             socket.emit('errorMsg', 'Room penuh atau tidak ditemukan!');
         }
@@ -157,10 +165,13 @@ io.on('connection', (socket) => {
             [p2Id]: { guess: p2Guess, result: p2Result, win: p2Win }
         };
 
+        if (p1Win) room.scores[p1Id] = (room.scores[p1Id] || 0) + 1;
+        if (p2Win) room.scores[p2Id] = (room.scores[p2Id] || 0) + 1;
+
         io.to(roomId).emit('roundResult', roundData);
 
         if (p1Win || p2Win) {
-            io.to(roomId).emit('gameOver', { p1Win, p2Win });
+            io.to(roomId).emit('gameOver', { p1Win, p2Win, scores: room.scores });
             // mark finished but keep room for rematch
             room.finished = true;
         } else {
